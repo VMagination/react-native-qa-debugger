@@ -1,0 +1,22 @@
+{
+  "name": "react-native-qa-debugger-example",
+  "displayName": "QaDebugger Example",
+  "expo": {
+    "name": "react-native-qa-debugger-example",
+    "slug": "react-native-qa-debugger-example",
+    "description": "Example app for react-native-qa-debugger",
+    "privacy": "public",
+    "version": "1.0.0",
+    "platforms": [
+      "ios",
+      "android",
+      "web"
+    ],
+    "ios": {
+      "supportsTablet": true
+    },
+    "assetBundlePatterns": [
+      "**/*"
+    ]
+  }
+}
