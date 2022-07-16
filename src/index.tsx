@@ -1,4 +1,11 @@
-import { View, Text, FlatList, Pressable, ScrollView } from 'react-native';
+import {
+  View,
+  Text,
+  FlatList,
+  Pressable,
+  ScrollView,
+  Alert,
+} from 'react-native';
 import React, { FC, useEffect, useState } from 'react';
 import { resetLogItems, toggleDebugger, useDebugItems } from './utils';
 import Clipboard from '@react-native-clipboard/clipboard';
@@ -6,6 +13,8 @@ import { useShowDebugger } from './utils/useShowDebugger';
 import { DebuggerItem } from './components/DebuggerItem';
 import { styles, itemColorByType } from './styles';
 import { DebuggerState } from './state';
+import { pickDirectory } from 'react-native-document-picker';
+import RnBlobUtil from 'react-native-blob-util';
 
 export * from './utils';
 export * from './components';
@@ -17,8 +26,7 @@ export function multiply(a: number, b: number): Promise<number> {
 const Item = ({ item }: any) => {
   const [visible, setVisible] = useState(false);
 
-  const handleCopyPress = () =>
-    Clipboard.setString(`'${JSON.stringify(item)}'`);
+  const handleCopyPress = () => Clipboard.setString(JSON.stringify(item));
 
   const colorByType = itemColorByType(item.logType);
 
@@ -97,8 +105,21 @@ export const Debugger: FC<Props> = React.memo(({ getGlobalState }) => {
   const handleGetGlobalState = () =>
     getGlobalState && Clipboard.setString(JSON.stringify(getGlobalState?.()));
 
-  const handleCopyAll = () => {
-    Clipboard.setString(JSON.stringify(debugItems));
+  const handleExportItems = async () => {
+    const dir = await pickDirectory();
+    if (!dir) {
+      Clipboard.setString(JSON.stringify(debugItems));
+      return;
+    }
+    const filePath = `${dir.uri}/qa-debugger-${new Date().toISOString()}.json`;
+    RnBlobUtil.fs
+      .writeFile(filePath, JSON.stringify(debugItems), 'utf8')
+      .then(() => {
+        Alert.alert('File successfully saved');
+      })
+      .catch(() => {
+        Clipboard.setString(JSON.stringify(debugItems));
+      });
   };
 
   return show ? (
@@ -115,8 +136,8 @@ export const Debugger: FC<Props> = React.memo(({ getGlobalState }) => {
         renderItem={renderItem}
       />
       <View style={styles.buttonSection}>
-        <Pressable onPress={handleCopyAll} style={styles.button}>
-          <Text style={styles.buttonText}>Copy all items</Text>
+        <Pressable onPress={handleExportItems} style={styles.button}>
+          <Text style={styles.buttonText}>Export items</Text>
         </Pressable>
         <Pressable
           onPress={resetLogItems}
