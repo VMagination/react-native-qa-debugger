@@ -81,9 +81,11 @@ export const styles = StyleSheet.create({
     paddingBottom: 8,
   },
   itemScrollWrapperVisible: {
+    paddingBottom: 8,
     marginBottom: 24,
   },
   itemScrollWrapper: {
+    paddingBottom: 8,
     marginBottom: 0,
   },
   titleWrapper: {
@@ -91,7 +93,7 @@ export const styles = StyleSheet.create({
     padding: 8,
   },
   title: {
-    color: 'white',
+    color: colors.textSecondary,
     fontWeight: 'bold',
     fontSize: 16,
   },
@@ -112,13 +114,28 @@ export const styles = StyleSheet.create({
     color: colors.textSecondary,
   },
   buttonText: {
-    color: 'white',
+    color: colors.textSecondary,
     fontWeight: '500',
   },
   button: {
     padding: 8,
     flex: 1,
     alignItems: 'center',
+  },
+  sendButton: {
+    marginHorizontal: 8,
+    paddingVertical: 4,
+    paddingHorizontal: 8,
+    borderWidth: 1,
+    borderColor: colors.textSecondary,
+  },
+  sendToInput: {
+    color: colors.textSecondary,
+    margin: 8,
+    paddingVertical: 4,
+    paddingHorizontal: 8,
+    borderWidth: 1,
+    flex: 1,
   },
   centralButton: {
     borderLeftWidth: 1,
@@ -127,6 +144,7 @@ export const styles = StyleSheet.create({
   },
   buttonSection: {
     flexDirection: 'row',
+    alignItems: 'center',
     borderColor: colors.separator,
     borderTopWidth: 1,
   },

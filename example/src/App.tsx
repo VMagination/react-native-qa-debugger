@@ -11,7 +11,7 @@ import {
 toggleDebugger(true);
 
 export default function App() {
-  const [result, setResult] = React.useState<number | undefined>(2);
+  const [result, setResult] = React.useState(2);
 
   React.useEffect(() => {
     multiply(result / 2 + 1, 2).then(setResult);

@@ -1,9 +1,11 @@
 import { Pressable, Text, useWindowDimensions, View } from 'react-native';
 import React, { useEffect, useMemo, useState } from 'react';
-import { emptyFn } from '../../utils';
 
 import { styles, getIconStyles } from './styles';
 import { colors } from '../../constants';
+
+const renderPreview = (item: any) =>
+  Array.isArray(item) ? `[${item.length}]` || '[]' : '{...}';
 
 export const DebuggerItem = React.memo(
   ({ item, prefix = '', onToggle }: any) => {
@@ -28,7 +30,9 @@ export const DebuggerItem = React.memo(
                   (accum, [key, value]) => [
                     ...accum,
                     `${key} : ${
-                      value && typeof value === 'object' ? `{...}` : `${value}`
+                      value && typeof value === 'object'
+                        ? renderPreview(value)
+                        : `${value}`
                     }`,
                   ],
                   [] as string[]
@@ -43,7 +47,7 @@ export const DebuggerItem = React.memo(
       <View style={styles.wrapper}>
         <Pressable
           style={styles.pressable}
-          onLongPress={emptyFn}
+          // onLongPress={emptyFn}
           onPress={toggleSection}
         >
           <View style={getIconStyles({ show, isObject })} />
@@ -53,7 +57,7 @@ export const DebuggerItem = React.memo(
               maxWidth: prefix ? undefined : width - 74,
             }}
             numberOfLines={!isObject && show ? undefined : 1}
-            selectable
+            // selectable={!isObject}
           >
             {preview}
           </Text>

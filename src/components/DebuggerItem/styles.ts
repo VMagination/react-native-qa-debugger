@@ -22,7 +22,7 @@ export const getIconStyles = ({
   show: boolean;
   isObject: boolean;
 }) => ({
-  marginRight: 4,
+  marginRight: !show ? 6 : 4,
   borderTopWidth: show ? 6 : 4,
   borderRightWidth: show ? 4 : 0,
   borderBottomWidth: !show ? 4 : 0,

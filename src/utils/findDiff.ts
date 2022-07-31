@@ -17,7 +17,9 @@ export const findDiff = (a: any, b: any): any => {
       typeof b[key] === 'object'
     ) {
       const innerResult = findDiff(value, b[key]);
-      result = { ...result, [key]: innerResult };
+      result = Object.keys(innerResult).length
+        ? { ...result, [key]: innerResult }
+        : result;
       return;
     }
     if (value === b[key]) return;

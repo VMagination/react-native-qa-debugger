@@ -4,6 +4,9 @@ import {
   FlatList,
   Pressable,
   ScrollView,
+  TextInput,
+  TouchableOpacity,
+  Linking,
   Alert,
 } from 'react-native';
 import React, { FC, useEffect, useState } from 'react';
@@ -13,8 +16,6 @@ import { useShowDebugger } from './utils/useShowDebugger';
 import { DebuggerItem } from './components/DebuggerItem';
 import { styles, itemColorByType } from './styles';
 import { DebuggerState } from './state';
-import { pickDirectory } from 'react-native-document-picker';
-import RnBlobUtil from 'react-native-blob-util';
 
 export * from './utils';
 export * from './components';
@@ -88,7 +89,7 @@ const renderItem = ({ item }: any) => <Item item={item} />;
 export const Debugger: FC<Props> = React.memo(({ getGlobalState }) => {
   const [debugItems] = useDebugItems();
   const [show] = useShowDebugger();
-  console.log({ debugItems });
+
   useEffect(() => {
     DebuggerState.isMounted = true;
     return () => {
@@ -105,21 +106,38 @@ export const Debugger: FC<Props> = React.memo(({ getGlobalState }) => {
   const handleGetGlobalState = () =>
     getGlobalState && Clipboard.setString(JSON.stringify(getGlobalState?.()));
 
-  const handleExportItems = async () => {
-    const dir = await pickDirectory();
-    if (!dir) {
-      Clipboard.setString(JSON.stringify(debugItems));
-      return;
-    }
-    const filePath = `${dir.uri}/qa-debugger-${new Date().toISOString()}.json`;
-    RnBlobUtil.fs
-      .writeFile(filePath, JSON.stringify(debugItems), 'utf8')
-      .then(() => {
-        Alert.alert('File successfully saved');
+  const handleCopyItems = () => {
+    Clipboard.setString(JSON.stringify(debugItems));
+  };
+
+  const [sendTo, setSendTo] = useState('');
+
+  const handleSend = async () => {
+    if (!sendTo) return;
+    if (sendTo.includes('@')) {
+      const canSendEmail = await Linking.canOpenURL(`mailto:${sendTo}`);
+      if (canSendEmail) {
+        Linking.openURL(
+          `mailto:${sendTo}?subject=logs${new Date().toISOString()}&body=${JSON.stringify(
+            debugItems
+          )}`
+        );
+      } else {
+        Alert.alert('Cannot send email');
+      }
+    } else {
+      // 	https://webhook.site/ab0c53e9-a21e-4b46-ab4c-02fe9b6cac93
+      fetch(sendTo.trim(), {
+        method: 'POST',
+        body: JSON.stringify(debugItems),
       })
-      .catch(() => {
-        Clipboard.setString(JSON.stringify(debugItems));
-      });
+        .then(() => {
+          Alert.alert('Success', `Logs sent to ${sendTo.trim()}`);
+        })
+        .catch(() => {
+          Alert.alert('Error', `Could not send logs to ${sendTo.trim()}`);
+        });
+    }
   };
 
   return show ? (
@@ -136,8 +154,28 @@ export const Debugger: FC<Props> = React.memo(({ getGlobalState }) => {
         renderItem={renderItem}
       />
       <View style={styles.buttonSection}>
-        <Pressable onPress={handleExportItems} style={styles.button}>
-          <Text style={styles.buttonText}>Export items</Text>
+        <Text style={styles.buttonText}> Send to</Text>
+        <TextInput
+          style={styles.sendToInput}
+          value={sendTo}
+          onChangeText={setSendTo}
+        />
+        {Boolean(sendTo) && (
+          <TouchableOpacity style={styles.sendButton} onPress={handleSend}>
+            <Text style={styles.buttonText}>Send</Text>
+          </TouchableOpacity>
+        )}
+      </View>
+      {Boolean(getGlobalState) && (
+        <View style={styles.buttonSection}>
+          <Pressable onPress={handleGetGlobalState} style={styles.button}>
+            <Text style={styles.buttonText}>Copy global state</Text>
+          </Pressable>
+        </View>
+      )}
+      <View style={styles.buttonSection}>
+        <Pressable onPress={handleCopyItems} style={styles.button}>
+          <Text style={styles.buttonText}>Copy items</Text>
         </Pressable>
         <Pressable
           onPress={resetLogItems}
@@ -147,11 +185,6 @@ export const Debugger: FC<Props> = React.memo(({ getGlobalState }) => {
         </Pressable>
         <Pressable onPress={handleClose} style={styles.button}>
           <Text style={styles.buttonText}>Close</Text>
-        </Pressable>
-      </View>
-      <View style={styles.buttonSection}>
-        <Pressable onPress={handleGetGlobalState} style={styles.button}>
-          <Text style={styles.buttonText}>Copy global state</Text>
         </Pressable>
       </View>
     </View>
