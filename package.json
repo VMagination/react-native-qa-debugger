@@ -1,6 +1,6 @@
 {
   "name": "react-native-qa-debugger",
-  "version": "0.2.3",
+  "version": "0.3.1",
   "description": "react-native-qa-debugger",
   "main": "lib/commonjs/index",
   "module": "lib/module/index",
@@ -145,5 +145,8 @@
       "module",
       "typescript"
     ]
+  },
+  "dependencies": {
+    "fast-equals": "^4.0.1"
   }
 }

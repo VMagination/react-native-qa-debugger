@@ -3,6 +3,7 @@ import React, { useEffect, useMemo, useState } from 'react';
 
 import { styles, getIconStyles } from './styles';
 import { colors } from '../../constants';
+import { reverseUndefFallback } from '../../utils/findDiff';
 
 const renderPreview = (item: any) =>
   Array.isArray(item) ? `[${item.length}]` || '[]' : '{...}';
@@ -32,7 +33,7 @@ export const DebuggerItem = React.memo(
                     `${key} : ${
                       value && typeof value === 'object'
                         ? renderPreview(value)
-                        : `${value}`
+                        : `${reverseUndefFallback(value)}`
                     }`,
                   ],
                   [] as string[]
@@ -40,6 +41,7 @@ export const DebuggerItem = React.memo(
                 .join(', ')} }`
             : `${item}`
         }`,
+      // eslint-disable-next-line react-hooks/exhaustive-deps
       []
     );
 

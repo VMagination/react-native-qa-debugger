@@ -21,10 +21,16 @@ export const resetLogItems = () => {
 export const addLogItem = (...newItems: LogItem[]) => {
   if (!DebuggerState.isMounted) return;
   let snapshot: any;
+  let snapshotReadable: any;
   if (DebuggerState.areSnapshotsEnabled && DebuggerState.getGlobalState) {
     const newSnapshot = DebuggerState.getGlobalState();
     if (DebuggerState.previousSnapshot) {
-      snapshot = findDiff(DebuggerState.previousSnapshot, newSnapshot);
+      const { diff, diffReadable } = findDiff(
+        DebuggerState.previousSnapshot,
+        newSnapshot
+      );
+      snapshotReadable = diffReadable;
+      snapshot = diff;
     } else {
       snapshot = newSnapshot;
     }
@@ -39,6 +45,7 @@ export const addLogItem = (...newItems: LogItem[]) => {
           type: item.type ?? undefined,
           data: item?.data || item,
           snapshot,
+          snapshotReadable,
           timestamp: new Date().toISOString(),
         }
       : {
@@ -47,6 +54,7 @@ export const addLogItem = (...newItems: LogItem[]) => {
           timestamp: new Date().toISOString(),
           logType: 'info',
           snapshot,
+          snapshotReadable,
           type: undefined,
         }
   );

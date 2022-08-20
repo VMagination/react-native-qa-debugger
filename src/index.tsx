@@ -27,7 +27,14 @@ export function multiply(a: number, b: number): Promise<number> {
 const Item = ({ item }: any) => {
   const [visible, setVisible] = useState(false);
 
-  const handleCopyPress = () => Clipboard.setString(JSON.stringify(item));
+  const handleCopyPress = () =>
+    Clipboard.setString(
+      JSON.stringify({
+        ...item,
+        snapshot: undefined,
+        snapshotReadable: undefined,
+      })
+    );
 
   const colorByType = itemColorByType(item.logType);
 
