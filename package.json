@@ -1,6 +1,6 @@
 {
   "name": "react-native-qa-debugger",
-  "version": "0.4.1",
+  "version": "0.4.2",
   "description": "Debugger for QA to help you debug your app and reproducible issues",
   "main": "lib/commonjs/index",
   "module": "lib/module/index",
@@ -39,11 +39,11 @@
     "ios",
     "android"
   ],
-  "repository": "https://github.com/vmukhamediev/react-native-qa-debugger",
-  "author": "Vladislav Mukhamediev <vladislav.muhamediev@innowise-group.com> (https://github.com/vmukhamediev)",
+  "repository": "https://github.com/VladislavMukhamediev/react-native-qa-debugger",
+  "author": "Vladya",
   "license": "MIT",
   "bugs": {
-    "url": "https://github.com/vmukhamediev/react-native-qa-debugger/issues"
+    "url": "https://github.com/VladislavMukhamediev/react-native-qa-debugger/issues"
   },
   "homepage": "https://vladislavmukhamediev.github.io/react-native-qa-debugger/",
   "publishConfig": {
