@@ -3,31 +3,35 @@ import { colors } from './constants';
 
 export * from './utils';
 
-export const itemColorByType = (type?: string) => {
-  switch (type || '') {
+export const itemColorByType = (typeOrColor?: string) => {
+  switch (typeOrColor || '') {
     case 'success':
       return 'lightgreen';
     case 'error':
-      return 'red';
+      return '#FF6347';
     case 'warning':
-      return 'yellow';
+      return '#F0E68C';
     case 'info':
       return 'lightblue';
     default:
-      return type;
+      return typeOrColor;
   }
 };
 
-const { height } = Dimensions.get('window');
+const { height, width } = Dimensions.get('window');
+
+const maxHeight = Math.max(height * 0.7, 300);
 
 export const styles = StyleSheet.create({
   wrapper: {
-    elevation: 100000,
+    flex: 0,
+    elevation: 9999999,
+    zIndex: 9999999,
     position: 'absolute',
     left: 0,
     top: 0,
-    width: '100%',
-    maxHeight: Math.max(height * 0.6, 300),
+    width: width || '100%',
+    maxHeight: maxHeight,
     backgroundColor: '#000000BB',
   },
   itemWrapper: {
@@ -121,6 +125,11 @@ export const styles = StyleSheet.create({
     padding: 8,
     flex: 1,
     alignItems: 'center',
+  },
+  switcher: {
+    position: 'absolute',
+    left: 4,
+    top: maxHeight + 16,
   },
   sendButton: {
     marginHorizontal: 8,

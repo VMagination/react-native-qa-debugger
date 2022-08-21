@@ -1,8 +1,8 @@
 export type IDebuggerState = {
   isMounted: boolean;
   areSnapshotsEnabled: boolean;
-  getGlobalState?: () => any;
-  previousSnapshot: any;
+  getGlobalState?: () => any | Promise<any>;
+  previousSnapshot: any | Promise<any>;
 };
 
 export const DebuggerState: IDebuggerState = {

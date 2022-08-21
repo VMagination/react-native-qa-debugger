@@ -10,14 +10,28 @@ export const undef = '[QA Debugger]: undefined';
 const undefFallback = (v: any) => (v === undefined ? undef : v);
 export const reverseUndefFallback = (v: any) => (v === undef ? undefined : v);
 
-export const findDiff = (a: any, b: any): { diff: any; diffReadable: any } => {
+let counter = 0;
+
+const waitForFrame = () => new Promise((r) => requestAnimationFrame(r));
+
+export const findDiff = async (
+  aRaw: any | Promise<any>,
+  bRaw: any | Promise<any>
+): Promise<{ diff: any; diffReadable: any }> => {
+  if (!(counter % 1000)) {
+    await waitForFrame();
+  }
+  counter++;
+  const a = await aRaw;
+  const b = await bRaw;
   if (deepEqual(a, b)) return { diff: undefined, diffReadable: undefined };
   const allKeys = [
     ...new Set([...Object.keys(a || {}), ...Object.keys(b || {})]),
   ];
   let result = {} as any;
   let resultReadable = {} as any;
-  allKeys.forEach((key) => {
+  await allKeys.reduce(async (accum, key) => {
+    await accum;
     const value = a?.[key];
     if (
       value &&
@@ -25,10 +39,8 @@ export const findDiff = (a: any, b: any): { diff: any; diffReadable: any } => {
       b?.[key] &&
       typeof b[key] === 'object'
     ) {
-      const { diff: innerResult, diffReadable: innerResultReadable } = findDiff(
-        value,
-        b[key]
-      );
+      const { diff: innerResult, diffReadable: innerResultReadable } =
+        await findDiff(value, b[key]);
       result = Object.keys(innerResult || {}).length
         ? { ...result, [key]: undefFallback(innerResult) }
         : result;
@@ -46,7 +58,7 @@ export const findDiff = (a: any, b: any): { diff: any; diffReadable: any } => {
         previous: undefFallback(value),
       },
     };
-  });
+  }, new Promise((r) => r(null)));
 
   return { diff: result, diffReadable: resultReadable };
 };

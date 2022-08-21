@@ -5,8 +5,18 @@ import { styles, getIconStyles } from './styles';
 import { colors } from '../../constants';
 import { reverseUndefFallback } from '../../utils/findDiff';
 
-const renderPreview = (item: any) =>
-  Array.isArray(item) ? `[${item.length}]` || '[]' : '{...}';
+const renderPreview = (item: any) => {
+  if (Array.isArray(item)) {
+    return item.length ? '[...]' : '[]';
+  }
+  if (item && typeof item === 'object') {
+    return Object.keys(item).length ? '{...}' : '{}';
+  }
+  return `${item}`;
+};
+
+const isObjectArray = (item: any, yes: any, no: any) =>
+  Array.isArray(item) ? yes : no;
 
 export const DebuggerItem = React.memo(
   ({ item, prefix = '', onToggle }: any) => {
@@ -26,7 +36,7 @@ export const DebuggerItem = React.memo(
       () =>
         `${prefix} ${
           isObject
-            ? `{ ${Object.entries(item)
+            ? `${isObjectArray(item, '[', '{')} ${Object.entries(item)
                 .reduce(
                   (accum, [key, value]) => [
                     ...accum,
@@ -38,7 +48,7 @@ export const DebuggerItem = React.memo(
                   ],
                   [] as string[]
                 )
-                .join(', ')} }`
+                .join(', ')} ${isObjectArray(item, ']', '}')}`
             : `${item}`
         }`,
       // eslint-disable-next-line react-hooks/exhaustive-deps

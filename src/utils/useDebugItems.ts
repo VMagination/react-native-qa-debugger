@@ -8,34 +8,40 @@ const callbacks = {} as Record<string, (newItems: any[]) => void>;
 
 type LogItem = any & {
   label?: string;
-  type?: 'info' | 'success' | 'error' | 'warning';
+  title?: string;
+  logType?: 'info' | 'success' | 'error' | 'warning';
+  type?: any;
+  data?: any;
 };
 
 export const resetLogItems = () => {
+  DebuggerState.previousSnapshot = undefined;
   currentDebugItems = [];
   Object.values(callbacks).forEach((callback) => {
     callback?.(currentDebugItems);
   });
 };
 
-export const addLogItem = (...newItems: LogItem[]) => {
-  if (!DebuggerState.isMounted) return;
-  let snapshot: any;
-  let snapshotReadable: any;
+export const getCurrentSnapshots = () => {
+  let snapshot: Promise<any> | undefined;
+  let snapshotReadable: Promise<any> | undefined;
   if (DebuggerState.areSnapshotsEnabled && DebuggerState.getGlobalState) {
-    const newSnapshot = DebuggerState.getGlobalState();
+    const newSnapshot = DebuggerState.getGlobalState() as Promise<any>;
     if (DebuggerState.previousSnapshot) {
-      const { diff, diffReadable } = findDiff(
-        DebuggerState.previousSnapshot,
-        newSnapshot
-      );
-      snapshotReadable = diffReadable;
-      snapshot = diff;
+      const diffPromise = findDiff(DebuggerState.previousSnapshot, newSnapshot);
+      snapshotReadable = diffPromise.then(({ diffReadable }) => diffReadable);
+      snapshot = diffPromise.then(({ diff }) => diff);
     } else {
       snapshot = newSnapshot;
     }
     DebuggerState.previousSnapshot = newSnapshot;
   }
+  return { snapshot, snapshotReadable };
+};
+
+export const addLogItem = (...newItems: LogItem[]) => {
+  if (!DebuggerState.isMounted) return;
+  const { snapshot, snapshotReadable } = getCurrentSnapshots();
   const normalizedItems = newItems.map((item) =>
     item && typeof item === 'object'
       ? {
@@ -63,6 +69,8 @@ export const addLogItem = (...newItems: LogItem[]) => {
     callback?.(currentDebugItems);
   });
 };
+
+export const logToDebugger = addLogItem;
 
 const getGenIdFn = () => {
   let lastId = 0;
