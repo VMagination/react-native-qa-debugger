@@ -1,6 +1,6 @@
 {
   "name": "react-native-qa-debugger",
-  "version": "0.4.2",
+  "version": "0.4.4",
   "description": "Debugger for QA to help you debug your app and reproducible issues",
   "main": "lib/commonjs/index",
   "module": "lib/module/index",

@@ -8,6 +8,8 @@ import {
   Linking,
   Alert,
   SafeAreaView,
+  Keyboard,
+  useWindowDimensions,
 } from 'react-native';
 import React, { FC, useEffect, useState } from 'react';
 import { resetLogItems, toggleDebugger, useDebugItems } from './utils';
@@ -51,9 +53,12 @@ export const Debugger: FC<Props> = React.memo(
     customSendRequest,
     hideSwitcher,
   }) => {
+    const { height } = useWindowDimensions();
+
     const [debugItems] = useDebugItems();
     const [show] = useShowDebugger();
     const [sendTo, setSendTo] = useState(sendToDefaultValue ?? '');
+    const [forceHeight, setForceHeight] = useState<null | number>(null);
 
     useEffect(() => {
       DebuggerState.isMounted = true;
@@ -129,10 +134,31 @@ export const Debugger: FC<Props> = React.memo(
       }
     };
 
+    useEffect(() => {
+      const openListener = Keyboard.addListener(
+        'keyboardDidShow',
+        ({ endCoordinates }) => {
+          setForceHeight(height - endCoordinates.height - 24);
+        }
+      );
+      const hideListener = Keyboard.addListener('keyboardDidHide', () => {
+        setForceHeight(null);
+      });
+      return () => {
+        openListener.remove();
+        hideListener.remove();
+      };
+    }, [height]);
+
     return (
       <>
         {show ? (
-          <SafeAreaView style={styles.wrapper}>
+          <SafeAreaView
+            style={[
+              styles.wrapper,
+              forceHeight ? { maxHeight: forceHeight } : false,
+            ]}
+          >
             <View style={styles.titleWrapper}>
               <Text style={styles.title}>QA DEBUGGER</Text>
             </View>

@@ -20,7 +20,7 @@ export const itemColorByType = (typeOrColor?: string) => {
 
 const { height, width } = Dimensions.get('window');
 
-const maxHeight = Math.max(height * 0.7, 300);
+const maxHeight = Math.max(height * 0.6, 300);
 
 export const styles = StyleSheet.create({
   wrapper: {
