@@ -41,7 +41,7 @@ useEffect(() => {
 
  1. Find open API to retrieve the data to. Such as webhook\.site
  2. Use the url acquired, paste it to the "Send to" input and press the button
- 3. Copy the data received from the request and go to [github-pages](https://vladislavmukhamediev.github.io/react-native-qa-debugger/) made to help with visualizing and combing the data
+ 3. Copy the data received from the request and go to [github-pages](https://vmagination.github.io/react-native-qa-debugger/) made to help with visualizing and combing the data
  4. Paste the data and Debug
 
 ## API Reference
